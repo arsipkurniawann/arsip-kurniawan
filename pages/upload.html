@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Upload Arsip</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <aside class="sidebar">
+
+        <h3>Arsip Kurniawan</h3>
+
+        <ul>
+
+            <li onclick="location.href='dashboard.html'">
+                Dashboard
+            </li>
+
+            <li onclick="location.href='arsip.html'">
+                Arsip
+            </li>
+
+            <li onclick="location.href='upload.html'">
+                Upload Arsip
+            </li>
+
+            <li id="menuUser"
+                onclick="location.href='user.html'">
+                Pengguna
+            </li>
+
+            <li onclick="logout()">
+                Logout
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <main class="content">
+
+        <div class="card p-4">
+
+            <h2 class="mb-4">
+                Upload Arsip
+            </h2>
+
+            <div class="mb-3">
+
+                <label>Kategori</label>
+
+                <select
+                    id="kategori"
+                    class="form-select">
+
+                    <option>BC 2.3</option>
+                    <option>BC 2.5</option>
+                    <option>BC 2.6.1</option>
+                    <option>BC 2.6.2</option>
+                    <option>BC 2.7</option>
+                    <option>BC 3.0</option>
+                    <option>BC 4.0</option>
+                    <option>BC 4.1</option>
+                    <option>Lainnya</option>
+
+                </select>
+
+            </div>
+
+            <div id="ajuSection">
+
+                <div class="mb-3">
+
+                    <label>No Aju</label>
+
+                    <input
+                        type="text"
+                        id="noAju"
+                        class="form-control">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label>Nomor Pendaftaran</label>
+
+                    <input
+                        type="text"
+                        id="nomorPendaftaran"
+                        class="form-control">
+
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>Nama Dokumen</label>
+
+                <input
+                    type="text"
+                    id="namaDokumen"
+                    class="form-control">
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>Tanggal</label>
+
+                <input
+                    type="date"
+                    id="tanggal"
+                    class="form-control">
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>Keterangan</label>
+
+                <textarea
+                    id="keterangan"
+                    class="form-control">
+                </textarea>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>File Arsip</label>
+
+                <input
+                    type="file"
+                    id="fileArsip"
+                    class="form-control">
+
+            </div>
+
+            <button
+                class="btn btn-primary"
+                onclick="simpanArsip()">
+
+                Simpan Arsip
+
+            </button>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="../js/protect.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/upload.js"></script>
+
+</body>
+</html>
