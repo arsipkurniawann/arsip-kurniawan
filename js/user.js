@@ -114,7 +114,7 @@ function showTambahUser(){
 
     const role =
     prompt(
-        "Role (admin/user)"
+        "Role (admin/user/viewer)"
     );
 
     if(!role)
@@ -218,7 +218,7 @@ function editUser(id){
 
         const role =
         prompt(
-            "Role (admin/user)",
+            "Role (admin/user/viewer)",
             user.role
         );
 

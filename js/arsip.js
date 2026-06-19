@@ -1,3 +1,6 @@
+const currentRole =
+localStorage.getItem("role");
+
 let semuaArsip = [];
 
 function loadArsip(){
@@ -93,6 +96,8 @@ function renderArsip(data){
 
                 </button>
 
+                ${currentRole !== "viewer" ? `
+
                 <button
                 class="btn btn-sm btn-danger"
                 onclick="hapusArsip(${item.id})">
@@ -100,6 +105,8 @@ function renderArsip(data){
                 Hapus
 
                 </button>
+
+                ` : ""}
 
             </td>
 
@@ -259,6 +266,19 @@ function downloadFile(id){
 }
 
 function hapusArsip(id){
+
+    if(
+    localStorage.getItem("role")
+    === "viewer"
+    ){
+
+    alert(
+        "Viewer tidak memiliki akses menghapus arsip"
+    );
+
+    return;
+
+    }
 
     if(
         !confirm(

@@ -1,201 +1,139 @@
 function loadDashboard() {
 
-    const tx =
-    db.transaction(
-        ["arsip"],
-        "readonly"
-    );
+    if (!db) {
+        console.log("Database belum siap");
+        return;
+    }
 
-    const store =
-    tx.objectStore(
-        "arsip"
-    );
+    const tx = db.transaction(["arsip"], "readonly");
+    const store = tx.objectStore("arsip");
+    const request = store.getAll();
 
-    const request =
-    store.getAll();
+    request.onsuccess = function () {
 
-    request.onsuccess =
-    function(){
+        const data = request.result || [];
 
-        const data =
-        request.result;
+        console.log("Data Arsip:", data);
 
-        // =========================
         // TOTAL ARSIP
-        // =========================
+        document.getElementById("totalArsip").innerText = data.length;
 
-        document
-        .getElementById("totalArsip")
-        .innerText =
-        data.length;
-
-        // =========================
         // HARI INI
-        // =========================
+        const today = new Date().toISOString().split("T")[0];
 
-        const today =
-        new Date()
-        .toISOString()
-        .split("T")[0];
+        const arsipHariIni = data.filter(item => {
 
-        const arsipHariIni =
-        data.filter(
-            x => x.tanggal === today
-        );
+            const tanggal =
+                item.tanggal ||
+                item.tanggalUpload ||
+                item.createdAt;
 
-        document
-        .getElementById("arsipHariIni")
-        .innerText =
-        arsipHariIni.length;
+            if (!tanggal) return false;
 
-        // =========================
+            return String(tanggal).substring(0, 10) === today;
+
+        });
+
+        document.getElementById("arsipHariIni").innerText =
+            arsipHariIni.length;
+
         // BULAN INI
-        // =========================
+        const now = new Date();
 
-        const now =
-        new Date();
+        const bulanIni = now.getMonth();
+        const tahunIni = now.getFullYear();
 
-        const bulanIni =
-        now.getMonth() + 1;
+        const arsipBulanIni = data.filter(item => {
 
-        const tahunIni =
-        now.getFullYear();
+            const tanggal =
+                item.tanggal ||
+                item.tanggalUpload ||
+                item.createdAt;
 
-        const arsipBulanIni =
-        data.filter(item=>{
+            if (!tanggal) return false;
 
-            if(!item.tanggal)
-                return false;
-
-            const t =
-            new Date(item.tanggal);
+            const t = new Date(tanggal);
 
             return (
-                t.getMonth()+1 === bulanIni
-                &&
+                t.getMonth() === bulanIni &&
                 t.getFullYear() === tahunIni
             );
 
         });
 
-        document
-        .getElementById("arsipBulanIni")
-        .innerText =
-        arsipBulanIni.length;
+        document.getElementById("arsipBulanIni").innerText =
+            arsipBulanIni.length;
 
-        // =========================
         // STORAGE
-        // =========================
-
         let totalBytes = 0;
 
-        data.forEach(item=>{
+        data.forEach(item => {
 
-            if(item.fileData){
-
-                totalBytes +=
-                item.fileData.length;
-
+            if (item.fileData) {
+                totalBytes += item.fileData.length;
             }
 
         });
 
         const totalMB =
-        (
-            totalBytes /
-            1024 /
-            1024
-        ).toFixed(2);
+            (totalBytes / 1024 / 1024).toFixed(2);
 
-        document
-        .getElementById("storage")
-        .innerText =
-        totalMB + " MB";
+        document.getElementById("storage").innerText =
+            totalMB + " MB";
 
-        // =========================
-        // KATEGORI
-        // =========================
+        // KATEGORI DINAMIS
+        const kategoriObj = {};
 
-        const kategoriList = [
+        data.forEach(item => {
 
-            "BC 2.3",
-            "BC 2.5",
-            "BC 2.6.1",
-            "BC 2.6.2",
-            "BC 2.7",
-            "BC 3.0",
-            "BC 4.0",
-            "BC 4.1",
-            "Lainnya"
+            const kategori =
+                item.kategori || "Lainnya";
 
-        ];
+            kategoriObj[kategori] =
+                (kategoriObj[kategori] || 0) + 1;
 
+        });
+
+        const labels = Object.keys(kategoriObj);
+        const values = Object.values(kategoriObj);
+
+        // CARD KATEGORI
         const kategoriCards =
-        document.getElementById(
-            "kategoriCards"
-        );
+            document.getElementById("kategoriCards");
 
         kategoriCards.innerHTML = "";
 
-        kategoriList.forEach(kategori=>{
-
-            const jumlah =
-            data.filter(
-                x => x.kategori === kategori
-            ).length;
+        labels.forEach((kategori, index) => {
 
             kategoriCards.innerHTML += `
-
-            <div class="col-md-3 mb-3">
-
-                <div class="card stat-card p-3">
-
-                    <h6>${kategori}</h6>
-
-                    <h3>${jumlah}</h3>
-
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card p-3">
+                        <h6>${kategori}</h6>
+                        <h3>${values[index]}</h3>
+                    </div>
                 </div>
-
-            </div>
-
             `;
 
         });
 
-        // =========================
-        // GRAFIK
-        // =========================
+        // JIKA BELUM ADA DATA
+        if (labels.length === 0) {
 
-        const labels = [];
-        const values = [];
-
-        kategoriList.forEach(kategori=>{
-
-            labels.push(kategori);
-
-            values.push(
-
-                data.filter(
-                    x => x.kategori === kategori
-                ).length
-
-            );
-
-        });
-
-        const chartCanvas =
-        document.getElementById(
-            "arsipChart"
-        );
-
-        if(window.arsipChartInstance){
-
-            window.arsipChartInstance.destroy();
+            labels.push("Belum Ada Arsip");
+            values.push(0);
 
         }
 
-            window.arsipChartInstance =
-            new Chart(chartCanvas, {
+        // HAPUS CHART LAMA
+        if (window.arsipChartInstance) {
+            window.arsipChartInstance.destroy();
+        }
+
+        const ctx =
+            document.getElementById("arsipChart");
+
+        window.arsipChartInstance =
+            new Chart(ctx, {
 
                 type: "bar",
 
@@ -204,12 +142,8 @@ function loadDashboard() {
                     labels: labels,
 
                     datasets: [{
-
-                        label:
-                        "Jumlah Arsip",
-
+                        label: "Jumlah Arsip",
                         data: values
-
                     }]
 
                 },
@@ -220,17 +154,17 @@ function loadDashboard() {
 
                     maintainAspectRatio: false,
 
-                    plugins:{
-                        legend:{
-                            display:true
+                    scales: {
+
+                        y: {
+                            beginAtZero: true
                         }
+
                     }
 
                 }
 
             });
-
-        }
 
     };
 

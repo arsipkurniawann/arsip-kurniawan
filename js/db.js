@@ -61,6 +61,14 @@ request.onupgradeneeded = function(event){
 
         });
 
+        userStore.add({
+
+            username:"viewer",
+            password:"viewer123",
+            role:"viewer"
+
+        });
+
     }
 
 };
@@ -69,9 +77,11 @@ request.onsuccess = function(event){
 
     db = event.target.result;
 
-    console.log(
-        "Database siap digunakan"
-    );
+    console.log("Database siap digunakan");
+
+    if(typeof loadDashboard === "function"){
+        loadDashboard();
+    }
 
 };
 

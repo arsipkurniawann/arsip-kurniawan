@@ -249,3 +249,14 @@ body{
     background:#2563eb;
 
 }
+
+.chart-container{
+    position: relative;
+    height: 350px;
+    width: 100%;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}

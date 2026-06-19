@@ -1,3 +1,17 @@
+if(
+    localStorage.getItem("role")
+    === "viewer"
+){
+
+    alert(
+        "Viewer tidak memiliki akses upload arsip"
+    );
+
+    location.href =
+    "dashboard.html";
+
+}
+
 document
 .getElementById("kategori")
 .addEventListener(
