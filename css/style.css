@@ -45,6 +45,14 @@ body{
 
 .sidebar{
 
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    min-width:250px;
+
     width:250px;
 
     background:#1f2937;
@@ -52,6 +60,8 @@ body{
     color:white;
 
     padding:20px;
+
+    overflow-x: auto;
 
 }
 
@@ -89,11 +99,15 @@ body{
 
 .content{
 
-    flex:1;
+    margin-left: 250px;
 
     padding:30px;
 
     background:#f3f4f6;
+
+    min-height: 100vh;
+
+    overflow-x: auto;
 
 }
 
@@ -133,4 +147,105 @@ body{
 #kategoriCards h2{
     font-size:40px;
     margin-top:10px;
+}
+
+/* GRAFIK DASHBOARD */
+
+.chart-container{
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+
+#arsipChart{
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px){
+
+    .wrapper{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+    }
+
+    .content{
+        padding:15px;
+    }
+
+    .stat-card h2{
+        font-size:28px;
+    }
+
+    .stat-card h3{
+        font-size:24px;
+    }
+
+    .chart-container{
+        height:300px;
+    }
+
+}
+
+.chart-container{
+
+    position:relative;
+
+    width:100%;
+
+    height:400px;
+
+    max-height:400px;
+
+}
+
+#arsipChart{
+
+    width:100% !important;
+
+    height:100% !important;
+
+}
+
+.content{
+
+    flex:1;
+
+    padding:30px;
+
+    background:#f3f4f6;
+
+    overflow-x:auto;
+
+}
+
+@media (max-width:768px){
+
+    .sidebar{
+
+        position:relative;
+
+        width:100%;
+
+        height:auto;
+
+    }
+
+    .content{
+
+        margin-left:0;
+
+    }
+
+}
+
+.sidebar li.active{
+
+    background:#2563eb;
+
 }

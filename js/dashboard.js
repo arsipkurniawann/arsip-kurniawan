@@ -188,8 +188,13 @@ function loadDashboard() {
             "arsipChart"
         );
 
-        if(chartCanvas){
+        if(window.arsipChartInstance){
 
+            window.arsipChartInstance.destroy();
+
+        }
+
+            window.arsipChartInstance =
             new Chart(chartCanvas, {
 
                 type: "bar",
@@ -213,14 +218,12 @@ function loadDashboard() {
 
                     responsive: true,
 
-                    scales: {
+                    maintainAspectRatio: false,
 
-                        y: {
-
-                            beginAtZero: true
-
+                    plugins:{
+                        legend:{
+                            display:true
                         }
-
                     }
 
                 }
