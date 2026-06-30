@@ -1,69 +1,241 @@
-function login(){
+/*
+====================================================
+Arsip Kurniawan v1.0
+Authentication Module
+====================================================
+*/
+
+const LOGIN_TIMEOUT = 30000;
+
+/*
+====================================================
+Login
+====================================================
+*/
+
+async function login() {
 
     const username =
-    document.getElementById(
-        "username"
-    ).value.trim();
+        document
+            .getElementById("username")
+            .value
+            .trim();
 
     const password =
-    document.getElementById(
-        "password"
-    ).value.trim();
+        document
+            .getElementById("password")
+            .value
+            .trim();
 
-    const tx =
-    db.transaction(
-        ["users"],
-        "readonly"
-    );
+    if (!username || !password) {
 
-    const store =
-    tx.objectStore(
-        "users"
-    );
+        alert("Username dan password wajib diisi.");
 
-    const request =
-    store.getAll();
+        return;
 
-    request.onsuccess =
-    function(){
+    }
 
-        const users =
-        request.result;
-
-        const user =
-        users.find(u =>
-
-            u.username === username
-            &&
-            u.password === password
-
+    const loginButton =
+        document.querySelector(
+            'button[onclick="login()"]'
         );
 
-        if(user){
+    const originalText =
+        loginButton.innerHTML;
 
-            localStorage.setItem(
-                "role",
-                user.role
+    loginButton.disabled = true;
+    loginButton.innerHTML = "Memproses...";
+
+    const controller =
+        new AbortController();
+
+    const timeout =
+        setTimeout(() => {
+
+            controller.abort();
+
+        }, LOGIN_TIMEOUT);
+
+    try {
+
+        const response =
+            await fetch(CONFIG.API_URL, {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    action: "login",
+
+                    username,
+
+                    password
+
+                }),
+
+                signal: controller.signal
+
+            });
+
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server tidak merespons."
             );
-
-            localStorage.setItem(
-                "username",
-                user.username
-            );
-
-            location.href =
-            "pages/dashboard.html";
 
         }
 
-        else{
+        const result =
+            await response.json();
+
+        if (!result.success) {
 
             alert(
-                "Username atau Password Salah"
+                result.message ||
+                "Login gagal."
+            );
+
+            return;
+
+        }
+
+        localStorage.setItem(
+            "isLogin",
+            "true"
+        );
+
+        localStorage.setItem(
+            "username",
+            result.username
+        );
+
+        localStorage.setItem(
+            "role",
+            result.role
+        );
+
+        localStorage.setItem(
+            "loginTime",
+            new Date().toISOString()
+        );
+
+        location.href =
+            "pages/dashboard.html";
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        if (err.name === "AbortError") {
+
+            alert(
+                "Request timeout."
             );
 
         }
+
+        else {
+
+            alert(
+                "Tidak dapat terhubung ke server."
+            );
+
+        }
+
+    }
+
+    finally {
+
+        clearTimeout(timeout);
+
+        loginButton.disabled = false;
+
+        loginButton.innerHTML =
+            originalText;
+
+    }
+
+}
+
+/*
+====================================================
+Logout
+====================================================
+*/
+
+function logout() {
+
+    localStorage.removeItem("isLogin");
+
+    localStorage.removeItem("username");
+
+    localStorage.removeItem("role");
+
+    localStorage.removeItem("loginTime");
+
+    location.href = "../index.html";
+
+}
+
+/*
+====================================================
+Session
+====================================================
+*/
+
+function isLoggedIn() {
+
+    return (
+        localStorage.getItem("isLogin")
+        ===
+        "true"
+    );
+
+}
+
+function getCurrentUser() {
+
+    return {
+
+        username:
+            localStorage.getItem(
+                "username"
+            ),
+
+        role:
+            localStorage.getItem(
+                "role"
+            )
 
     };
 
 }
+
+/*
+====================================================
+Console
+====================================================
+*/
+
+console.log(
+
+    CONFIG.APP_NAME +
+
+    " Auth Module v" +
+
+    CONFIG.VERSION +
+
+    " Loaded"
+
+);
